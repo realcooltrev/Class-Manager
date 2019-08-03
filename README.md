@@ -1,4 +1,4 @@
-# Class-Manager
+# class_manager
 This was the final project for my C++ programming class at Ivy Tech Community College. 
 
 This was made before I had more experience and expertise and some of the practices might not be the best and were more just to see what I could
