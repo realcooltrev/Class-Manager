@@ -15,103 +15,26 @@
 #include <string>
 #include <vector>
 
+#include "data.h"
+#include "models.h"
+
 using namespace std;
-
-struct person_t {
-    string name;
-    string email;
-};
-
-vector<person_t> roster = {
-    {"Diana", "dnixon4@ivytech.edu"},
-    {"Andy", "andy@ivytech.edu"},
-    {"Beth", "beth@ivytech.edu"},
-    {"Henry", "henry@ivytech.edu"},
-    {"Lily", "lili@ivytech.edu"},
-    {"Trevor", "tpierce42@ivytech.edu"}
-};
-
-enum class Permissions: char {
-    student='S',
-    faculty='F',
-    staff='A'
-};
-
-// This class will be used to store information about a user that logs in
-class User {
-    private:
-        string _name, _password;
-        Permissions _permissions; // This will tell if the user is a teacher or student
-        string _grades; // This will store five grades, if the user is a student
-    public:
-        // Getter and setter prototypes
-        void setName(string name);
-        string getName();
-        void setPassword(string password);
-        string getPassword();
-        void setPermissions(char permissions);
-        Permissions getPermissions();
-        void setGrades(string grades);
-        string getGrades();
-};
-
-void User::setName(string name) {
-    _name = name;
-}
-
-string User::getName() {
-    return _name;
-}
-
-void User::setPassword(string password) {
-    _password = password;
-}
-
-string User::getPassword() {
-    return _password;
-}
-
-void User::setPermissions(char permissions) {
-    if (permissions == 'S') {
-        _permissions = Permissions::student;
-    } 
-    else if (permissions == 'F') {
-        _permissions = Permissions::faculty;
-    }
-    else if (permissions == 'A') {
-        _permissions = Permissions::staff;
-    } else {
-        cerr << "Invalid permissions set" << endl;
-        cerr << "Current permissions set to: " << permissions << endl;
-    }
-}
-
-Permissions User::getPermissions() {
-    return _permissions;
-}
-
-void User::setGrades(string grades) {
-    _grades = grades;
-}
-
-string User::getGrades() {
-    return _grades;
-}
+using namespace Models;
 
 
 // Main function prototypes
-void updateUserInfo(User &, string, int);
-bool checkPassword(User &, string);
+void updateUserInfo(Models::User &, string, int);
+bool checkPassword(Models::User &, string);
 void viewRoster();
-void viewGrades(User &);
-void sendEmail(User &);
+void viewGrades(Models::User &);
+void sendEmail(Models::User &);
 
 int main() {
     // Time. The method in the book always gave me random results for some reason, but I found this method online and it always works perfectly due to time(0);
     time_t now = time(0);
     tm *localtm = localtime(&now);
 
-    User currentUser; // The instance of the user class
+    Models::User currentUser; // The instance of the user class
     fstream userFile, logFile; // The files used for the program
     string input, userName, fileName, userPassword;
     bool logout = false; // How to determine if the user wants to exit the program
@@ -176,7 +99,7 @@ int main() {
     return EXIT_SUCCESS;
 }
 
-void updateUserInfo(User &currentUser, string input, int fileLine) {
+void updateUserInfo(Models::User &currentUser, string input, int fileLine) {
     switch (fileLine) {
         case 1: currentUser.setName(input);
             break;
@@ -190,13 +113,13 @@ void updateUserInfo(User &currentUser, string input, int fileLine) {
 }
 
 // This function checks to see if the user entered the password matching the one stored in the data file. I know, not safe, but this is what I did. I should have looked into hashing the passwords
-bool checkPassword(User &currentUser, string userPassword) {
+bool checkPassword(Models::User &currentUser, string userPassword) {
     return currentUser.getPassword() == userPassword;
 }
 
 // This function displays the names and emails of people in the class
 void viewRoster() {
-    for (person_t person : roster) {
+    for (Models::person_t person : Data::roster) {
         cout << "Name: " << person.name;
         cout << " | Email: " << person.email;
         cout << endl;
@@ -206,7 +129,7 @@ void viewRoster() {
 }
 
 // This function allows the user to view their grades if they're a student. If a teacher, then they are told they cannot view their grades
-void viewGrades(User &currentUser) {
+void viewGrades(Models::User &currentUser) {
     if (currentUser.getPermissions() == Permissions::student) {
         string grades = currentUser.getGrades();
 
@@ -231,7 +154,7 @@ void viewGrades(User &currentUser) {
     system("pause");
 }
 
-void sendEmail(User &currentUser) {
+void sendEmail(Models::User &currentUser) {
     cin.ignore(); // You have to use this to ignore the previous \n that might be in the input buffer, otherwise the program skips asking for the email and asks for the recipient
     string email, receiver;
 
@@ -244,7 +167,7 @@ void sendEmail(User &currentUser) {
     // The following block is a linear search to see if the program can find the user that you entered
     bool found = false;
 
-    for (person_t person : roster) {
+    for (Models::person_t person : Data::roster) {
         if (person.name == receiver) {
             found = true;
             break;
