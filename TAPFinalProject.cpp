@@ -23,8 +23,7 @@ struct person_t {
     string email;
 };
 
-person_t roster[NUM_PEOPLE] =
-{
+person_t roster[NUM_PEOPLE] = {
     (person_t){"Diana", "dnixon4@ivytech.edu"},
     (person_t){"Andy", "andy@ivytech.edu"},
     (person_t){"Beth", "beth@ivytech.edu"},
@@ -33,54 +32,70 @@ person_t roster[NUM_PEOPLE] =
     (person_t){"Trevor", "tpierce42@ivytech.edu"}
 };
 
+enum class Permissions {
+    student,
+    faculty,
+    staff
+};
+
 // This class will be used to store information about a user that logs in
 class User {
     private:
-        string name, password;
-        string permissions; // This will tell if the user is a teacher or student
-        string grades; // This will store five grades, if the user is a student
+        string _name, _password;
+        Permissions _permissions; // This will tell if the user is a teacher or student
+        string _grades; // This will store five grades, if the user is a student
     public:
         // Getter and setter prototypes
-        void setName(string in_name);
+        void setName(string name);
         string getName();
-        void setPassword(string in_pass);
+        void setPassword(string password);
         string getPassword();
-        void setPermissions(string in_permis);
-        string getPermissions();
-        void setGrades(string in_grades);
+        void setPermissions(string permissions);
+        Permissions getPermissions();
+        void setGrades(string grades);
         string getGrades();
 };
 
-void User::setName(string in_name) {
-    name = in_name;
+void User::setName(string name) {
+    _name = name;
 }
 
 string User::getName() {
-    return name;
+    return _name;
 }
 
-void User::setPassword(string in_pass) {
-    password = in_pass;
+void User::setPassword(string password) {
+    _password = password;
 }
 
 string User::getPassword() {
-    return password;
+    return _password;
 }
 
-void User::setPermissions(string in_permis) {
-    permissions = in_permis;
+void User::setPermissions(string permissions) {
+    if (permissions == "S") {
+        _permissions = Permissions::student;
+    } else if (permissions == "F") {
+        _permissions = Permissions::faculty;
+    } else if (permissions == "AS") {
+        _permissions = Permissions::staff;
+    } else {
+        cerr << "Invalid permissions set" << endl;
+        cerr << "Current permissions set to: " << permissions << endl;
+        // Need to find a way to exit the program here...
+    }
 }
 
-string User::getPermissions() {
-    return permissions;
+Permissions User::getPermissions() {
+    return _permissions;
 }
 
-void User::setGrades(string in_grades) {
-    grades = in_grades;
+void User::setGrades(string grades) {
+    _grades = grades;
 }
 
 string User::getGrades() {
-    return grades;
+    return _grades;
 }
 
 
@@ -196,7 +211,7 @@ void viewRoster() {
 
 // This function allows the user to view their grades if they're a student. If a teacher, then they are told they cannot view their grades
 void viewGrades(User &currentUser) {
-    if (currentUser.getPermissions() == "S") { // S for student
+    if (currentUser.getPermissions() == Permissions::student) {
         string grades = currentUser.getGrades();
 
         // This whole block goes character by character and looks for $ delimiters that I placed between values in the string, then prints a new line
@@ -213,8 +228,10 @@ void viewGrades(User &currentUser) {
                 cout << currentChar; // This prints out the current character at the current index in the string
             }
         }
-    } else {
-        cerr << "Teachers cannot view grades since they do not have assignments";
+    } else if (currentUser.getPermissions() == Permissions::faculty) {
+        cerr << "Faculty cannot view grades since they do not have assignments";
+    } else if (currentUser.getPermissions() == Permissions::staff) {
+        cerr << "Adminstrative staff cannot view grades since they do not have assignments";
     }
     cout << endl;
     system("pause");
