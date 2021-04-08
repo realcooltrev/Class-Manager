@@ -11,6 +11,17 @@ namespace Data {
         {"Beth", "beth@ivytech.edu"},
         {"Henry", "henry@ivytech.edu"},
         {"Lily", "lili@ivytech.edu"},
-        {"Trevor", "tpierce42@ivytech.edu"}
+        {"Trevor", "tpierce42@ivytech.edu"},
+    };
+
+    std::vector<Models::user_data_t> user_data = {
+        {"dnixon4", "nice!", 'F'},
+        {"tpierce42", "corndog", 'S', {
+            {"Test1", 84},
+            {"Test2", 94},
+            {"Test3", 73},
+            {"Test4", 87},
+            {"Test5", 89},
+        }},
     };
 }

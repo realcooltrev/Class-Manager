@@ -1,4 +1,5 @@
 #pragma once
+#include <map>
 #include <string>
 #include <vector>
 
@@ -14,13 +15,18 @@ namespace Models {
         std::string email;
     };
 
-    // This class will be used to store information about a user that logs in
+    struct user_data_t {
+        std::string name;
+        std::string password;
+        char permissions;
+        std::map<std::string, int> grades;
+    };
+
     class User {
         private:
             std::string _name, _password;
-            Permissions _permissions; // This will tell if the user is a teacher or student
+            Permissions _permissions;
         public:
-            // Getter and setter prototypes
             void setName(std::string name) {
                 this->_name = name;
             }

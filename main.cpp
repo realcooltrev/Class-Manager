@@ -9,6 +9,7 @@
  */
 #include <cstdlib>
 #include <ctime>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
@@ -33,29 +34,14 @@ int main() {
     tm *localtm = localtime(&now);
 
     Models::User currentUser; // The instance of the user class
-    std::fstream userFile, logFile; // The files used for the program
+    std::fstream logFile; // The files used for the program
     std::string input, userName, fileName, userPassword;
     bool logout = false; // How to determine if the user wants to exit the program
     int fileLine = 1, menuChoice;
 
-    std::cout << "Hello! What is your name: ";
-    std::cin >> userName;
-
-    fileName = userName + ".txt";
-    userFile.open(fileName, std::ios::in); // Opens the user's data file for reading
     logFile.open("log.txt", std::ios::app); // Opens the log file to append new data to the end of the current file
 
     if (userFile) {
-        getline(userFile, input); // Gets the first line of the user's data file first
-
-        while (userFile) {
-            updateUserInfo(currentUser, input, fileLine); // Calls a function that updates the User class instance with the data in the user file, line by line
-            getline(userFile, input);
-            fileLine++;
-        }
-
-        std::cout << "Please enter your password: ";
-        std::cin >> userPassword;
 
         if (checkPassword(currentUser, userPassword)) {
             while (!logout) { // If the user hasn't pressed 4
@@ -97,17 +83,39 @@ int main() {
     return EXIT_SUCCESS;
 }
 
-void updateUserInfo(Models::User &currentUser, std::string input, int fileLine) {
-    switch (fileLine) {
-        case 1: currentUser.setName(input);
-            break;
-        case 2: currentUser.setPassword(input);
-            break;
-        case 3: currentUser.setPermissions(input[0]);
-            break;
-        case 4: currentUser.setGrades(input);
-            break;
+void login() {
+    char permissions;
+    std::string fileName, grades, input, name, password, userPassword, userName;
+    std::fstream userFile;
+    int fileLine = 0;
+
+    std::cout << "Hello! Please enter your username: ";
+    std::cin >> userName;
+
+    // Get the data from the data file
+    fileName = userName + ".txt";
+    userFile.open(fileName, std::ios::in);
+
+    getline(userFile, input); // Gets the first line of the user's data file first
+
+    while (userFile) {
+        switch (fileLine) {
+            case 1: name = input;
+                break;
+            case 2: password = input;
+                break;
+            case 3: permissions = input[0];
+                break;
+            case 4: grades = input;
+                break;
+        }
+        getline(userFile, input);
+        fileLine++;
     }
+
+    std::cout << "Please enter your password: ";
+    std::cin >> userPassword;
+
 }
 
 // This function checks to see if the user entered the password matching the one stored in the data file. I know, not safe, but this is what I did. I should have looked into hashing the passwords
