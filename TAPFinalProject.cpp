@@ -7,7 +7,6 @@
  * The program will also write all of the user's activities to a log file for
  * security purposes
  */
-#include <array>
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
@@ -17,16 +16,14 @@
 
 using namespace std;
 
-// The fake class roster and their fake emails, set globally
 #define NUM_PEOPLE 6
-#define NUM_PEOPLE_DATA 2
 
 struct person_t {
     string name;
     string email;
 };
 
-array<person_t, NUM_PEOPLE> roster
+person_t roster[NUM_PEOPLE] =
 {
     (person_t){"Diana", "dnixon4@ivytech.edu"},
     (person_t){"Andy", "andy@ivytech.edu"},
@@ -188,14 +185,9 @@ bool checkPassword(User &currentUser, string userPassword) {
 
 // This function displays the names and emails of people in the class
 void viewRoster() {
-    for (int i = 0; i < NUM_PEOPLE; i++) {
-        for (int j = 0; j < NUM_PEOPLE_DATA; j++) {
-            if (j == 0) {
-                cout << "Name: " << roster[i][j];
-            } else {
-                cout << " | Email: " << roster[i][j];
-            }
-        }
+    for (person_t person : roster) {
+        cout << "Name: " << person.name;
+        cout << " | Email: " << person.email;
         cout << endl;
     }
     cout << endl;
@@ -211,8 +203,8 @@ void viewGrades(User &currentUser) {
         // and moves onto the next iteration. This is because I had a very hard time get private class arrays to work right and I got this to work
         string currentChar;
 
-        for (int i = 0; i < grades.length(); i++) {
-            currentChar = grades[i];
+        for (char grade : grades) {
+            currentChar = grade;
 
             if (currentChar == "$") { // I put $'s to separate values in the string
                 cout << endl;
@@ -239,20 +231,17 @@ void sendEmail(User &currentUser) {
     getline(cin, receiver);
 
     // The following block is a linear search to see if the program can find the user that you entered
-    int index = 0;
-    int position = -1;
     bool found = false;
 
-    while (index < 6 && !found) {
-        if (roster[index][0] == receiver) {
+    for (person_t person : roster) {
+        if (person.name == receiver) {
             found = true;
-            position = index;
+            break;
         }
-        index++;
     }
 
     if (found) {
-        cout << "Email has been sent from " << currentUser.getName() << " to " << roster[position][1];
+        cout << "Email has been sent from " << currentUser.getName() << " to " << receiver;
     } else {
         cerr << "Sorry, we could not find " << receiver << " in our database";
     }
