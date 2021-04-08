@@ -1,10 +1,10 @@
+#pragma once
 #include <string>
 #include <vector>
 
 #include "models.h"
 
 namespace Data {
-
     std::vector<Models::person_t> roster = {
         {"Diana", "dnixon4@ivytech.edu"},
         {"Andy", "andy@ivytech.edu"},

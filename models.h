@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 #include <vector>
 
@@ -45,6 +46,7 @@ namespace Models {
                 } else {
                     std::cerr << "Invalid permissions set" << std::endl;
                     std::cerr << "Current permissions set to: " << permissions << std::endl;
+                    std::exit(EXIT_FAILURE);
                 }
             }
             Permissions getPermissions() {
