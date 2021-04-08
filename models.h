@@ -19,30 +19,29 @@ namespace Models {
         private:
             std::string _name, _password;
             Permissions _permissions; // This will tell if the user is a teacher or student
-            std::string _grades; // This will store five grades, if the user is a student
         public:
             // Getter and setter prototypes
             void setName(std::string name) {
-                _name = name;
+                this->_name = name;
             }
             std::string getName() {
-                return _name;
+                return this->_name;
             }
             void setPassword(std::string password) {
-                _password = password;
+                this->_password = password;
             }
             std::string getPassword()  {
-                return _password;
+                return this->_password;
             }
             void setPermissions(char permissions) {
                 if (permissions == 'S') {
-                    _permissions = Permissions::student;
+                    this->_permissions = Permissions::student;
                 } 
                 else if (permissions == 'F') {
-                    _permissions = Permissions::faculty;
+                    this->_permissions = Permissions::faculty;
                 }
                 else if (permissions == 'A') {
-                    _permissions = Permissions::staff;
+                    this->_permissions = Permissions::staff;
                 } else {
                     std::cerr << "Invalid permissions set" << std::endl;
                     std::cerr << "Current permissions set to: " << permissions << std::endl;
@@ -50,13 +49,21 @@ namespace Models {
                 }
             }
             Permissions getPermissions() {
-                return _permissions;
-            }
-            void setGrades(std::string grades) {
-                _grades = grades;
-            }
-            std::string User::getGrades() {
-                return _grades;
+                return this->_permissions;
             }
     };
+
+    class Student : User {
+        private:
+            std::string _grades;
+        public:
+            void setGrades(std::string grades) {
+                this->_grades = grades;
+            }
+            std::string getGrades() {
+                return this->_grades;
+            }
+    };
+
+    class Teacher : User {};
 };
