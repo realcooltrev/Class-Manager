@@ -7,40 +7,51 @@
  * The program will also write all of the user's activities to a log file for
  * security purposes
  */
- #include <ctime>
- #include <fstream>
- #include <iostream>
- #include <stdlib.h>
- #include <string>
+#include <array>
+#include <cstdlib>
+#include <ctime>
+#include <fstream>
+#include <iostream>
+#include <stdlib.h>
+#include <string>
 
- using namespace std;
+using namespace std;
 
- // The fake class roster and their fake emails, set globally
- const int NUM_PEOPLE = 6;
- const int NUM_PEOPLE_DATA = 2;
- string roster[NUM_PEOPLE][NUM_PEOPLE_DATA] = {{"Diana", "dnixon4@ivytech.edu"},
-                         {"Andy", "andy@ivytech.edu"},
-                         {"Beth", "beth@ivytech.edu"},
-                         {"Henry", "henry@ivytech.edu"},
-                         {"Lily", "lili@ivytech.edu"},
-                         {"Trevor", "tpierce42@ivytech.edu"}};
+// The fake class roster and their fake emails, set globally
+#define NUM_PEOPLE 6
+#define NUM_PEOPLE_DATA 2
+
+struct person_t {
+    string name;
+    string email;
+};
+
+array<person_t, NUM_PEOPLE> roster
+{
+    (person_t){"Diana", "dnixon4@ivytech.edu"},
+    (person_t){"Andy", "andy@ivytech.edu"},
+    (person_t){"Beth", "beth@ivytech.edu"},
+    (person_t){"Henry", "henry@ivytech.edu"},
+    (person_t){"Lily", "lili@ivytech.edu"},
+    (person_t){"Trevor", "tpierce42@ivytech.edu"}
+};
 
 // This class will be used to store information about a user that logs in
- class User {
- private:
-    string name, password;
-    string permissions; // This will tell if the user is a teacher or student
-    string grades; // This will store five grades, if the user is a student
- public:
-    // Getter and setter prototypes
-    void setName(string in_name);
-    string getName();
-    void setPassword(string in_pass);
-    string getPassword();
-    void setPermissions(string in_permis);
-    string getPermissions();
-    void setGrades(string in_grades);
-    string getGrades();
+class User {
+    private:
+        string name, password;
+        string permissions; // This will tell if the user is a teacher or student
+        string grades; // This will store five grades, if the user is a student
+    public:
+        // Getter and setter prototypes
+        void setName(string in_name);
+        string getName();
+        void setPassword(string in_pass);
+        string getPassword();
+        void setPermissions(string in_permis);
+        string getPermissions();
+        void setGrades(string in_grades);
+        string getGrades();
 };
 
 void User::setName(string in_name) {
@@ -142,15 +153,15 @@ int main() {
                 }
             }
         } else {
-            cout << "The password that you entered was incorrect and now the program will close";
+            cerr << "The password that you entered was incorrect and now the program will close";
         }
     } else {
-        cout << "Oh no! It looks like you do not have an account in our database!\n";
-        cout << "Please contact your administrator if you think that this is an error";
+        cerr << "Oh no! It looks like you do not have an account in our database!\n";
+        cerr << "Please contact your administrator if you think that this is an error";
     }
 
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 void updateUserInfo(User &currentUser, string input, int fileLine) {
@@ -211,7 +222,7 @@ void viewGrades(User &currentUser) {
             }
         }
     } else {
-        cout << "Teachers cannot view grades since they do not have assignments";
+        cerr << "Teachers cannot view grades since they do not have assignments";
     }
     cout << endl;
     system("pause");
@@ -243,7 +254,7 @@ void sendEmail(User &currentUser) {
     if (found) {
         cout << "Email has been sent from " << currentUser.getName() << " to " << roster[position][1];
     } else {
-        cout << "Sorry, we could not find " << receiver << " in our database";
+        cerr << "Sorry, we could not find " << receiver << " in our database";
     }
     cout << endl;
     system("pause");
