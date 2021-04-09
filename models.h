@@ -15,61 +15,52 @@ namespace Models {
         std::string email;
     };
 
-    struct user_data_t {
+    struct assignment_t {
         std::string name;
+        int score;
+    };
+
+    struct user_data_t {
+        std::string username;
         std::string password;
-        char permissions;
-        std::map<std::string, int> grades;
+        Permissions permissions;
+        std::vector<assignment_t> grades;
     };
 
     class User {
         private:
-            std::string _name, _password;
+            std::vector<assignment_t> _grades;
             Permissions _permissions;
+            std::string _username;
         public:
-            void setName(std::string name) {
-                this->_name = name;
-            }
-            std::string getName() {
-                return this->_name;
-            }
-            void setPassword(std::string password) {
-                this->_password = password;
-            }
-            std::string getPassword()  {
-                return this->_password;
-            }
-            void setPermissions(char permissions) {
-                if (permissions == 'S') {
-                    this->_permissions = Permissions::student;
-                } 
-                else if (permissions == 'F') {
-                    this->_permissions = Permissions::faculty;
-                }
-                else if (permissions == 'A') {
-                    this->_permissions = Permissions::staff;
-                } else {
-                    std::cerr << "Invalid permissions set" << std::endl;
-                    std::cerr << "Current permissions set to: " << permissions << std::endl;
-                    std::exit(EXIT_FAILURE);
-                }
-            }
-            Permissions getPermissions() {
-                return this->_permissions;
-            }
-    };
+            User() {}
+            User(std::string username, Permissions permissions, std::vector<assignment_t> grades) {
+                this->_username = username;
+                this->_permissions = permissions;
 
-    class Student : User {
-        private:
-            std::string _grades;
-        public:
-            void setGrades(std::string grades) {
-                this->_grades = grades;
+                if (this->_permissions == Permissions::student) {
+                    this->_grades = grades;
+                }
             }
-            std::string getGrades() {
+
+            void add_grade(assignment_t assignment) {
+                this->_grades.push_back(assignment);
+            }
+
+            std::vector<assignment_t> get_grades() {
                 return this->_grades;
             }
-    };
 
-    class Teacher : User {};
+            Permissions get_permissions() {
+                return this->_permissions;
+            }
+
+            std::string get_username() {
+                return this->_username;
+            }
+
+            void update_permissions(Permissions permissions) {
+                this->_permissions = permissions;
+            }
+    };
 };

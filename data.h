@@ -15,8 +15,8 @@ namespace Data {
     };
 
     std::vector<Models::user_data_t> user_data = {
-        {"dnixon4", "nice!", 'F'},
-        {"tpierce42", "corndog", 'S', {
+        {"dnixon4", "nice!", Models::Permissions::faculty},
+        {"tpierce42", "corndog", Models::Permissions::student, {
             {"Test1", 84},
             {"Test2", 94},
             {"Test3", 73},

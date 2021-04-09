@@ -20,139 +20,129 @@
 
 using namespace Models;
 
-
 // Main function prototypes
-void updateUserInfo(Models::User &, std::string, int);
-bool checkPassword(Models::User &, std::string);
-void viewRoster();
-void viewGrades(Models::User &);
-void sendEmail(Models::User &);
+void check_password(std::string stored_password);
+User get_account_info();
+void view_roster();
+void view_grades(User &);
+void send_email(User &);
 
 int main() {
-    // Time. The method in the book always gave me random results for some reason, but I found this method online and it always works perfectly due to time(0);
-    time_t now = time(0);
-    tm *localtm = localtime(&now);
+    // Setup logging
+    std::ofstream log("info.log");
+    auto old_rdbuf = std::clog.rdbuf();
+    std::clog.rdbuf(log.rdbuf());
 
-    Models::User currentUser; // The instance of the user class
-    std::fstream logFile; // The files used for the program
-    std::string input, userName, fileName, userPassword;
-    bool logout = false; // How to determine if the user wants to exit the program
-    int fileLine = 1, menuChoice;
+    bool logout = false;
+    int menu_choice;
 
-    logFile.open("log.txt", std::ios::app); // Opens the log file to append new data to the end of the current file
+    User current_user = get_account_info();
 
-    if (userFile) {
+    while (!logout) { // If the user hasn't pressed 4
+        std::system("CLS"); // This clears the screen
+        std::cout << "1. View Class Roster\n";
+        std::cout << "2. View Your Grades\n";
+        std::cout << "3. Send Email\n";
+        std::cout << "4. Exit\n";
 
-        if (checkPassword(currentUser, userPassword)) {
-            while (!logout) { // If the user hasn't pressed 4
-                system("CLS"); // This clears the screen
-                std::cout << "1. View Class Roster\n";
-                std::cout << "2. View Your Grades\n";
-                std::cout << "3. Send Email\n";
-                std::cout << "4. Exit\n";
+        std::cin >> menu_choice;
+        std::system("CLS");
+        std::time_t now = std::time(nullptr);
 
-                std::cin >> menuChoice;
-                system("CLS");
-
-                switch (menuChoice) {
-                    case 1: viewRoster(); // Calls a function to allow the user to view the class roster
-                        logFile << currentUser.getName() << " Action: " << menuChoice << " Time/Date: " << asctime(localtm) << std::endl; // This writes to the log the user, their action, and the time/date
-                        break;
-                    case 2: viewGrades(currentUser); // Allows students to view their grades
-                        logFile << currentUser.getName() << " Action: " << menuChoice << " Time/Date: " << asctime(localtm) << std::endl;
-                        break;
-                    case 3: sendEmail(currentUser); // Allows users to feel like they're sending an email
-                         logFile << currentUser.getName() << " Action: " << menuChoice << " Time/Date: " << asctime(localtm) << std::endl;
-                        break;
-                    case 4: logout = true;
-                        userFile.close();
-                        logFile.close();
-                        break;
-                    default: break;
-                }
-            }
-        } else {
-            std::cerr << "The password that you entered was incorrect and now the program will close";
+        switch (menu_choice) {
+            case 1: view_roster(); // Calls a function to allow the user to view the class roster
+                std::clog << current_user.get_username() << " Action: " << menu_choice << " Time/Date: " << std::asctime(std::localtime(&now)) << std::endl;
+                break;
+            case 2: view_grades(current_user); // Allows students to view their grades
+                std::clog << current_user.get_username() << " Action: " << menu_choice << " Time/Date: " << std::asctime(std::localtime(&now)) << std::endl;
+                break;
+            case 3: send_email(current_user); // Allows users to feel like they're sending an email
+                std::clog << current_user.get_username() << " Action: " << menu_choice << " Time/Date: " << std::asctime(std::localtime(&now)) << std::endl;
+                break;
+            case 4: logout = true;
+                std::clog.rdbuf(old_rdbuf);
+                log.close();
+                break;
+            default: break;
         }
-    } else {
-        std::cerr << "Oh no! It looks like you do not have an account in our database!\n";
-        std::cerr << "Please contact your administrator if you think that this is an error";
     }
-
 
     return EXIT_SUCCESS;
 }
 
-void login() {
-    char permissions;
-    std::string fileName, grades, input, name, password, userPassword, userName;
-    std::fstream userFile;
-    int fileLine = 0;
+void check_password(std::string stored_password) {
+    bool invalid_password = true;
+    std::string in_password;
 
-    std::cout << "Hello! Please enter your username: ";
-    std::cin >> userName;
+    while (invalid_password) {
+        std::cout << "Please enter your password: ";
+        std::cin >> in_password;
 
-    // Get the data from the data file
-    fileName = userName + ".txt";
-    userFile.open(fileName, std::ios::in);
-
-    getline(userFile, input); // Gets the first line of the user's data file first
-
-    while (userFile) {
-        switch (fileLine) {
-            case 1: name = input;
-                break;
-            case 2: password = input;
-                break;
-            case 3: permissions = input[0];
-                break;
-            case 4: grades = input;
-                break;
+        if (in_password == "EXIT") {
+            std::exit(EXIT_FAILURE);
         }
-        getline(userFile, input);
-        fileLine++;
+
+        if (in_password == stored_password) {
+            invalid_password = false;
+        } else {
+            std::cerr << "Invalid password" << std::endl;
+        }
     }
-
-    std::cout << "Please enter your password: ";
-    std::cin >> userPassword;
-
 }
 
-// This function checks to see if the user entered the password matching the one stored in the data file. I know, not safe, but this is what I did. I should have looked into hashing the passwords
-bool checkPassword(Models::User &currentUser, std::string userPassword) {
-    return currentUser.getPassword() == userPassword;
+User get_account_info() {
+    bool invalid_username = true;
+    std::string in_username;
+    User current_user;
+
+    while (invalid_username) {
+        std::cout << "Hello! Please enter your username: ";
+        std::cin >> in_username;
+
+        for (user_data_t user : Data::user_data) {
+            if (in_username == "EXIT") {
+                std::exit(EXIT_FAILURE);
+            }
+
+            if (user.username == in_username) {
+                invalid_username = false;
+                check_password(user.password);
+                current_user = User(user.username, user.permissions, user.grades);
+                break;
+            }
+        }
+
+        if (invalid_username) {
+            std::cerr << "Invalid username" << std::endl;
+        }
+    }
+
+    return current_user;
 }
 
 // This function displays the names and emails of people in the class
-void viewRoster() {
-    for (Models::person_t person : Data::roster) {
+void view_roster() {
+    for (person_t person : Data::roster) {
         std::cout << "Name: " << person.name;
         std::cout << " | Email: " << person.email;
         std::cout << std::endl;
     }
     std::cout << std::endl;
-    system("pause"); // This allows for the screen to pause until the user presses a key. I love it!
+    std::system("pause");
 }
 
-// This function allows the user to view their grades if they're a student. If a teacher, then they are told they cannot view their grades
-void viewGrades(Models::User &currentUser) {
-    if (currentUser.getPermissions() == Permissions::student) {
-        std::string grades = currentUser.getGrades();
+// Check grades if user is a student.
+// Otherwise, the user is told they cannot view their grades.
+void view_grades(User &user) {
+    if (user.get_permissions() == Permissions::student) {
+        std::vector<assignment_t> grades = user.get_grades();
 
-        // This whole block goes character by character and looks for $ delimiters that I placed between values in the string, then prints a new line
-        // and moves onto the next iteration. This is because I had a very hard time get private class arrays to work right and I got this to work
-        std::string currentChar;
-
-        for (char grade : grades) {
-            currentChar = grade;
-
-            if (currentChar == "$") { // I put $'s to separate values in the string
-                std::cout << std::endl;
-                continue; // This skips to the next iteration of the loop
-            } else {
-                std::cout << currentChar; // This prints out the current character at the current index in the string
-            }
+        for (assignment_t grade : grades) {
+            std::cout << "Assignment name: " << grade.name << std::endl;
+            std::cout << "Score          : " << grade.score << std::endl;
         }
+
+        std::cout << std::endl;
     } else {
         std::cerr << "Only students can view grades, since only they have assignments";
     }
@@ -160,32 +150,32 @@ void viewGrades(Models::User &currentUser) {
     system("pause");
 }
 
-void sendEmail(Models::User &currentUser) {
-    std::cin.ignore(); // You have to use this to ignore the previous \n that might be in the input buffer, otherwise the program skips asking for the email and asks for the recipient
+void send_email(User &user) {
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::string email, receiver;
 
     std::cout << "Please write an email below\n";
-    getline(std::cin, email);
+    std::getline(std::cin, email);
 
     std::cout << "Who would like to send the email to?\n";
-    getline(std::cin, receiver);
+    std::getline(std::cin, receiver);
 
-    // The following block is a linear search to see if the program can find the user that you entered
-    bool found = false;
+    bool email_found = false;
 
-    for (Models::person_t person : Data::roster) {
+    for (person_t person : Data::roster) {
         if (person.name == receiver) {
-            found = true;
+            email_found = true;
             break;
         }
     }
 
-    if (found) {
-        std::cout << "Email has been sent from " << currentUser.getName() << " to " << receiver;
+    if (email_found) {
+        std::cout << "Email has been sent from " << user.get_username() << " to " << receiver;
     } else {
         std::cerr << "Sorry, we could not find " << receiver << " in our database";
     }
+
     std::cout << std::endl;
-    system("pause");
+    std::system("pause");
 }
 
