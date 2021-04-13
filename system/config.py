@@ -6,10 +6,10 @@ import psycopg2
 class Config():
     db = None
 
-    @staticmethod
-    def load() -> None:
+    @classmethod
+    def load(cls) -> None:
         logging.info("Connecting to database...")
-        Config.db = psycopg2.connect(
+        cls.db = psycopg2.connect(
             db_name=environ["PGDATABASE"],
             user=environ["PGUSER"],
             password=environ["PGPASSWORD"],
