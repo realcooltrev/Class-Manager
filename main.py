@@ -1,5 +1,4 @@
-from models import User
-import system
+from src import system
 
 if __name__ == "__main__":
     system.startup()

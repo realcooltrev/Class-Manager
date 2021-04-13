@@ -3,21 +3,15 @@ from os import environ
 
 import psycopg2
 
-from models import Permissions
-from models import User
+from . models import Permissions
+from . models import User
 
 class Config():
-    db: psycopg2.connection
+    db = None
 
-    def load(self) -> None:
-        logging.basicConfig(
-            filename="sis.log",
-            encoding="utf-8",
-            level=logging.INFO
-        )
-        logging.info("System starting up...")
-        logging.info("Connecting to database...")
-        self.db = psycopg2.connect(
+    @staticmethod
+    def load() -> None:
+        Config.db = psycopg2.connect(
             db_name=environ["PGDATABASE"],
             user=environ["PGUSER"],
             password=environ["PGPASSWORD"],
@@ -28,6 +22,13 @@ class Config():
 
 
 def startup() -> None:
+    logging.basicConfig(
+        filename="sis.log",
+        encoding="utf-8",
+        level=logging.INFO
+    )
+    logging.info("System starting up...")
+    logging.info("Connecting to database...")
     Config.load()
 
 def login() -> User:

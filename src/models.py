@@ -17,8 +17,8 @@ class User:
         self.username = username
         self.email = email
         self.permissions = permissions
-        
-    def check_grades() -> list[Assignment]:
-        if self.permissions = Permissions.STUDENT:
+
+    def check_grades(self) -> list[Assignment]:
+        if self.permissions == Permissions.STUDENT:
             pass
         pass
