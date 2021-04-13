@@ -1,25 +1,8 @@
 import logging
-from os import environ
 
-import psycopg2
-
+from . config import Config
 from . models import Permissions
 from . models import User
-
-class Config():
-    db = None
-
-    @staticmethod
-    def load() -> None:
-        Config.db = psycopg2.connect(
-            db_name=environ["PGDATABASE"],
-            user=environ["PGUSER"],
-            password=environ["PGPASSWORD"],
-            host=environ["PGHOST"],
-            port=environ["PGPORT"]
-        )
-        logging.info("Connected to database successfully")
-
 
 def startup() -> None:
     logging.basicConfig(
@@ -28,8 +11,9 @@ def startup() -> None:
         level=logging.INFO
     )
     logging.info("System starting up...")
-    logging.info("Connecting to database...")
+    logging.info("Loading system configuration...")
     Config.load()
+
 
 def login() -> User:
     username_is_invalid = True
@@ -37,7 +21,7 @@ def login() -> User:
 
     while username_is_invalid:
         entered_username = input("Hello! Please enter your username: ")
-        username_is_invalid = False
+
         current_user = User(entered_username, f"{entered_username}@test.edu", Permissions.STUDENT)
         break
 
