@@ -1,3 +1,4 @@
+import atexit
 import logging
 
 from . config import Config
@@ -14,6 +15,9 @@ def startup() -> None:
     logging.info("Loading system configuration...")
     Config.load()
 
+@atexit.register
+def shutdown() -> None:
+    Config.db.close()
 
 def login() -> User:
     username_is_invalid = True
