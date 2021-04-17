@@ -1,6 +1,9 @@
 import psycopg2
 
 from . config import Config
+from . models import User
+from . exceptions import AuthenticationError
+
 
 class Db():
     connection: any
@@ -15,19 +18,24 @@ class Db():
             port=Config.db["port"]
         )
 
-    @classmethod
-    def check_username(cls, username: str) -> bool:
-        result: str
+
+class Sql():
+    @staticmethod
+    def authenticate_user(username: str, password: str) -> User:
         query = """
-            select username 
+            select permissions
                 from users
-                where username = (%(username)s)"""
+                where username = (%(username)s)
+                  and password = (%(password)s)"""
 
-        with cls.connection.cursor() as cursor:
+        with Db.connection.cursor() as cursor:
             try:
-                cursor.execute(query, {"username", username})
-                return True
+                cursor.execute(
+                    query,
+                    {"username": username, "password": password}
+                )
+                permissions, = cursor.fetchone()
+                return User(username, permissions)
 
-            except psycopg2.ProgrammingError as e:
-                return False
-
+            except psycopg2.ProgrammingError:
+                raise AuthenticationError

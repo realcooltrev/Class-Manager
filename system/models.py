@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Assignment:
     def __init__(self, name: str, score: int) -> None:
         self.name = name
@@ -13,9 +14,8 @@ class Permissions(Enum):
 
 
 class User:
-    def __init__(self, username: str, email: str, permissions: Permissions) -> None:
+    def __init__(self, username: str, permissions: Permissions) -> None:
         self.username = username
-        self.email = email
         self.permissions = permissions
 
     def check_grades(self) -> list[Assignment]:

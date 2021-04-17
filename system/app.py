@@ -1,10 +1,13 @@
 import atexit
+from getpass import getpass
 import logging
 
 from . db import Db
+from . db import Sql
 from . config import Config
 from . models import Permissions
 from . models import User
+
 
 def startup() -> None:
     logging.basicConfig(
@@ -25,15 +28,24 @@ def startup() -> None:
 def shutdown() -> None:
     Db.connection.close()
 
+
 def login() -> User:
-    username_is_invalid = True
+    not_authenicated = True
     current_user: User
 
-    while username_is_invalid:
-        entered_username = input("Hello! Please enter your username: ")
+    while not_authenicated:
+        entered_username = input("Username: ")
+        entered_password = getpass("Password: ")
 
-        current_user = User(entered_username, f"{entered_username}@test.edu", Permissions.STUDENT)
-        break
+        try:
+            current_user = Sql.authenticate_user(
+                entered_username,
+                entered_password
+            )
+            not_authenicated = False
+            break
+
+        Exception AuthenticationError:
+            print("Username/password is invalid")
 
     return current_user
-
