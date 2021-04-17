@@ -23,11 +23,11 @@ class Db():
                 from users
                 where username = (%(username)s)"""
 
-        with cls.connection.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
+        with cls.connection.cursor() as cursor:
             try:
                 cursor.execute(query, {"username", username})
-                record = cursor.fetchone()
                 return True
 
             except psycopg2.ProgrammingError as e:
                 return False
+
