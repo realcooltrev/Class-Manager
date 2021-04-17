@@ -1,6 +1,7 @@
 import atexit
 import logging
 
+from . db import Db
 from . config import Config
 from . models import Permissions
 from . models import User
@@ -14,10 +15,15 @@ def startup() -> None:
     logging.info("System starting up...")
     logging.info("Loading system configuration...")
     Config.load()
+    logging.info("Sytem configuration loaded successfully")
+    logging.info("Connecting to data source...")
+    Db.connect()
+    logging.info("Data source connection established successfully")
+
 
 @atexit.register
 def shutdown() -> None:
-    Config.db.close()
+    Db.connection.close()
 
 def login() -> User:
     username_is_invalid = True

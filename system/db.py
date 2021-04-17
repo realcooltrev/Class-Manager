@@ -2,6 +2,22 @@ import psycopg2
 
 from . config import Config
 
-def check_username(username: str):
-    with Config.db.cursor() as cursor:
-        cursor.execute("")
+class Db():
+    connection: any
+
+    @classmethod
+    def connect(cls) -> None:
+        cls.connection = psycopg2.connect(
+            db_name=Config.db["name"],
+            user=Config.db["user"],
+            password=Config.db["password"],
+            host=Config.db["host"],
+            port=Config.db["port"]
+        )
+
+    @classmethod
+    def check_username(cls, username: str) -> bool:
+        with cls.connection.cursor() as cursor:
+            cursor.execute("")
+
+        return True

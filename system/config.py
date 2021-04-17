@@ -1,10 +1,11 @@
+from configparser import ConfigParser
 import logging
 from os import environ
 
 import psycopg2
 
 class Config():
-    db = None
+    db: any
 
     @classmethod
     def load(cls) -> None:
