@@ -4,6 +4,5 @@ This was the final project for my C++ programming class at Ivy Tech Community Co
 This was made before I had more experience and expertise and some of the practices might not be the best and were more just to see what I could
 do with my current knowledge at the time.
 
-## C++
-I have branched the old C++ branch as [c++commandline](https://github.com/realcooltrev/Class-Manager/tree/c%2B%2B-commandline) and might update it with better coding standards and use of more advanced/modern features
-at a later time. 
+This version is just the C++ version, which is the original version of this application. I've cleaned up the code a little bit since its initial 
+state, but I have no plans on further improving the code since I just would prefer to write code in other programming languages.
