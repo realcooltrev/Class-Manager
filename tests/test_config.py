@@ -8,22 +8,33 @@ from app.config import Env
 
 @pytest.fixture
 def config():
+    # Need to handle sending input to stdin
     Config.load(Env.TEST)
+    yield Config
+    Config.reset()
+
+
+@pytest.fixture
+def new_config():
+    mock_config_filename = f"{Path.cwd()}/mock_cfg.ini"
+    Path(mock_config_filename).unlink(True)
+    # Need to handle sending input to stdin
+    Config.load(Env.TEST, mock_config_filename)
+    yield Config
+    Config.reset()
 
 
 def test_load(config):
-    assert "name" in Config.db
-    assert "user" in Config.db
-    assert "password" in Config.db
-    assert "host" in Config.db
-    assert "port" in Config.db
+    expected_configs = [
+        "name",
+        "host",
+        "password"
+        "port",
+        "user",
+    ]
+    assert expected_configs in config.db
 
 
-def test_no_config_file():
-    mock_config_filename = f"{Path.cwd()}/mock_cfg.ini"
-    Path(mock_config_filename).unlink(True)
-    assert not Path(mock_config_filename).exists
+def test_no_config_file(new_config):
+    assert new_config.db is not None
 
-    Config.load(Env.TEST, mock_config_filename)
-    assert Path(mock_config_filename).exists
-    assert Config.db is not None

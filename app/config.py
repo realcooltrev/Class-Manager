@@ -13,17 +13,15 @@ class Env(Enum):
 class Config():
     db: any
     environment: Env
-    _file_name = "../config.ini"
+    _file_name: str
 
     @classmethod
-    def load(cls, environment: Env, filename: str=None) -> None:
+    def load(cls, environment: Env, filename: str="../config.ini") -> None:
         """Load the application configuration settings."""
         cls.environment = environment
+        cls._file_name = filename
 
         config = configparser.ConfigParser()
-        
-        if filename is not None:
-            cls._file_name = filename
 
         # Attempt to load the settings from the configuration file
         try:
@@ -31,10 +29,10 @@ class Config():
                 config.read_file(f)
 
         # If unable, initialize the file
-        except IOError:
+        except FileNotFoundError:
             print(f"{cls._file_name} file not found")
             print(f"Running setup for {cls._file_name} file...")
-            Path(f"../{cls._file_name}").touch()
+            Path(f"{cls._file_name}").touch()
             cls.db_setup(config, environment)
 
         # Attempt to load the environment-specific database settings
@@ -56,7 +54,14 @@ class Config():
         config["db_{environment}"]["host"] = input("Database host: ")
         config["db_{environment}"]["port"] = input("Database port: ")
         
-        with open(f"../{cls._file_name}", "a+") as f:
+        with open(f"{cls._file_name}", "a+") as f:
             config.write(f)
         
         cls.db = config[f"db_{environment}"]
+
+    @classmethod
+    def reset(cls) -> None:
+        """Reset the application configuration."""
+        cls.db = None
+        cls.environment = None
+        cls._file_name = None
