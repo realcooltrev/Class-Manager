@@ -15,11 +15,11 @@ class TestConfig(unittest.TestCase):
         self.db = Config.db
 
     def test_load(self):
-        self.assertTrue("name" in self.db)
-        self.assertTrue("user" in self.db)
-        self.assertTrue("password" in self.db)
-        self.assertTrue("host" in self.db)
-        self.assertTrue("port" in self.db)
+        self.assertIn("name", self.db)
+        self.assertIn("user", self.db)
+        self.assertIn("password", self.db)
+        self.assertIn("host", self.db)
+        self.assertIn("port", self.db)
 
 
 class TestDb(unittest.TestCase):
