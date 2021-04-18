@@ -40,7 +40,9 @@ def new_config(monkeypatch):
     mock_config_filename = f"{Path.cwd()}/mock_cfg.ini"
     Path(mock_config_filename).unlink(True)
 
-    monkeypatch.setattr("builtins.input", lambda *args: "test_database")
+    # So, this only actually overrides input calls once (the test_port one)
+    # Need to figure out a better solution so that this can be tested
+    # Maybe an event hook?
     monkeypatch.setattr("builtins.input", lambda *args: "test_database")
     monkeypatch.setattr("builtins.input", lambda *args: "test_user")
     monkeypatch.setattr("builtins.input", lambda *args: "test_password")
@@ -55,15 +57,23 @@ def new_config(monkeypatch):
 
 def test_load(config):
     expected_configs = [
-        "name",
-        "host",
-        "password",
-        "port",
-        "user",
+        "test_database",
+        "test_user",
+        "test_password",
+        "test_host",
+        "test_port",
     ]
-    assert sorted(expected_configs) == sorted(list(config.db.keys()))
+    assert sorted(expected_configs) == sorted(list(config.db.values()))
 
 
 def test_no_config_file(new_config):
-    assert new_config.db is not None
+    expected_configs = [
+        "test_database",
+        "test_user",
+        "test_password",
+        "test_host",
+        "test_port",
+    ]
+    print(list(new_config.db.values()))
+    assert sorted(expected_configs) == sorted(list(new_config.db.values()))
 
