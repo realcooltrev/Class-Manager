@@ -1,3 +1,4 @@
+import configparser
 from io import StringIO
 from pathlib import Path
 
@@ -11,8 +12,19 @@ from app.config import Env
 def config(monkeypatch):
     mock_config_filename = f"{Path.cwd()}/mock_cfg.ini"
     Path(mock_config_filename).unlink(True)
-    # TODO: Need to populate mock config file with data
-    Config.load(Env.TEST)
+    Path(mock_config_filename).touch()
+    config = configparser.ConfigParser()
+    config.add_section(f"db_{Env.TEST}")
+    config.set(f"db_{Env.TEST}", "name", "test_database")
+    config.set(f"db_{Env.TEST}", "user", "test_user")
+    config.set(f"db_{Env.TEST}", "password", "test_password")
+    config.set(f"db_{Env.TEST}", "host", "test_host")
+    config.set(f"db_{Env.TEST}", "port", "test_port")
+
+    with open(mock_config_filename, "w") as f:
+        config.write(f)
+
+    Config.load(Env.TEST, mock_config_filename)
     yield Config
     Config.reset()
     Path(mock_config_filename).unlink(True)
@@ -22,6 +34,7 @@ def config(monkeypatch):
 def new_config(monkeypatch):
     mock_config_filename = f"{Path.cwd()}/mock_cfg.ini"
     Path(mock_config_filename).unlink(True)
+    # TODO: stdin isn't working after the first string is sent
     monkeypatch.setattr("sys.stdin", StringIO("test_database"))
     monkeypatch.setattr("sys.stdin", StringIO("test_user"))
     monkeypatch.setattr("sys.stdin", StringIO("test_password"))

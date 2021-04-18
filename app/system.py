@@ -42,7 +42,7 @@ def startup() -> None:
 
     logging.info("System starting up...")
     logging.info("Loading system configuration...")
-    Config.load(args.environment)
+    Config.load(Env(args.environment))
 
     logging.info("Sytem configuration loaded successfully")
     logging.info("Connecting to data source...")

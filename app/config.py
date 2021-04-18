@@ -9,6 +9,9 @@ class Env(Enum):
     PROD = "prod"
     TEST = "test"
 
+    def __str__(self) -> str:
+        return self.value
+
 
 class Config():
     db: any
@@ -49,11 +52,12 @@ class Config():
     def db_setup(cls, config: configparser.ConfigParser(), environment: Env) -> None:
         """Walk the user through setting up their environment-specific database settings."""
         # TODO: This does not work, since these keys need to be created before populating
-        config["db_{environment}"]["name"] = input("Database name: ")
-        config["db_{environment}"]["user"] = input("Database user: ")
-        config["db_{environment}"]["password"] = input("Database password: ")
-        config["db_{environment}"]["host"] = input("Database host: ")
-        config["db_{environment}"]["port"] = input("Database port: ")
+        config.add_section(f"db_{environment}")
+        config[f"db_{environment}"]["name"] = input("Database name: ")
+        config[f"db_{environment}"]["user"] = input("Database user: ")
+        config[f"db_{environment}"]["password"] = input("Database password: ")
+        config[f"db_{environment}"]["host"] = input("Database host: ")
+        config[f"db_{environment}"]["port"] = input("Database port: ")
         
         with open(f"{cls._file_name}", "a+") as f:
             config.write(f)
