@@ -15,6 +15,7 @@ from . models import User
 
 
 def get_cli_args() -> argparse.Namespace:
+    """Get the application's command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-e",
@@ -30,6 +31,7 @@ def get_cli_args() -> argparse.Namespace:
 
 
 def startup() -> None:
+    """Setup everything needed for the application to run."""
     args = get_cli_args()
     logging.basicConfig(
         filename="sis.log",
@@ -50,10 +52,12 @@ def startup() -> None:
 
 @atexit.register
 def shutdown() -> None:
+    """Perform cleanup needed prior to application shutdown."""
     Db.connection.close()
 
 
 def login() -> User:
+    """Get a user's credentials and authenticate them against the database."""
     current_user: User
     not_authenicated: True
 

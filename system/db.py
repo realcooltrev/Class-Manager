@@ -22,17 +22,21 @@ class Db():
 class Sql():
     @staticmethod
     def authenticate_user(username: str, password: str) -> User:
-        query = """
-            select permissions
-                from users
-                where username = (%(username)s)
-                  and password = (%(password)s)"""
+        query = (
+            "select permissions"
+            "   from users"
+            "   where username = (%(username)s)"
+            "     and password = (%(password)s)"
+        )
 
         with Db.connection.cursor() as cursor:
             try:
                 cursor.execute(
                     query,
-                    {"username": username, "password": password}
+                    {
+                        "username": username,
+                        "password": password,
+                    }
                 )
                 permissions, = cursor.fetchone()
                 return User(username, permissions)
