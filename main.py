@@ -1,5 +1,5 @@
-from system import app
+from app import system
 
 if __name__ == "__main__":
-    app.startup()
-    current_user = app.login()
+    system.startup()
+    current_user = system.login()

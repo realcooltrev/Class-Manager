@@ -1,8 +1,8 @@
 import psycopg2
 
-from . config import Config
-from . models import User
-from . exceptions import AuthenticationError
+from app.config import Config
+from app.models import User
+from app.exceptions import AuthenticationError
 
 
 class Db():

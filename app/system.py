@@ -4,14 +4,15 @@ from getpass import getpass
 import hashlib
 import logging
 import os
+import sys
 
-from . db import Db
-from . db import Sql
-from . exceptions import AuthenticationError
-from . config import Config
-from . config import Env
-from . models import Permissions
-from . models import User
+from app.db import Db
+from app.db import Sql
+from app.exceptions import AuthenticationError
+from app.config import Config
+from app.config import Env
+from app.models import Permissions
+from app.models import User
 
 
 def get_cli_args() -> argparse.Namespace:
@@ -54,6 +55,7 @@ def startup() -> None:
 def shutdown() -> None:
     """Perform cleanup needed prior to application shutdown."""
     Db.connection.close()
+    sys.exit(0)
 
 
 def login() -> User:
