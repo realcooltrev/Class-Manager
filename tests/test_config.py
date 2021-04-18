@@ -1,5 +1,4 @@
 import configparser
-from io import StringIO
 from pathlib import Path
 
 import pytest
@@ -13,13 +12,19 @@ def config(monkeypatch):
     mock_config_filename = f"{Path.cwd()}/mock_cfg.ini"
     Path(mock_config_filename).unlink(True)
     Path(mock_config_filename).touch()
+
     config = configparser.ConfigParser()
-    config.add_section(f"db_{Env.TEST}")
-    config.set(f"db_{Env.TEST}", "name", "test_database")
-    config.set(f"db_{Env.TEST}", "user", "test_user")
-    config.set(f"db_{Env.TEST}", "password", "test_password")
-    config.set(f"db_{Env.TEST}", "host", "test_host")
-    config.set(f"db_{Env.TEST}", "port", "test_port")
+    config.read_dict(
+        {
+            f"db_{Env.TEST}": {
+                "name": "test_database",
+                "user": "test_user",
+                "password": "test_password",
+                "host": "test_host",
+                "port": "test_port",
+            }
+        }
+    )
 
     with open(mock_config_filename, "w") as f:
         config.write(f)
@@ -34,12 +39,13 @@ def config(monkeypatch):
 def new_config(monkeypatch):
     mock_config_filename = f"{Path.cwd()}/mock_cfg.ini"
     Path(mock_config_filename).unlink(True)
-    # TODO: stdin isn't working after the first string is sent
-    monkeypatch.setattr("sys.stdin", StringIO("test_database"))
-    monkeypatch.setattr("sys.stdin", StringIO("test_user"))
-    monkeypatch.setattr("sys.stdin", StringIO("test_password"))
-    monkeypatch.setattr("sys.stdin", StringIO("test_host"))
-    monkeypatch.setattr("sys.stdin", StringIO("test_port"))
+
+    __builtins__["input"] = lambda x: "test_database"
+    __builtins__["input"] = lambda x: "test_user"
+    __builtins__["input"] = lambda x: "test_password"
+    __builtins__["input"] = lambda x: "test_host"
+    __builtins__["input"] = lambda x: "test_port"
+
     Config.load(Env.TEST, mock_config_filename)
     yield Config
     Config.reset()
@@ -50,11 +56,11 @@ def test_load(config):
     expected_configs = [
         "name",
         "host",
-        "password"
+        "password",
         "port",
         "user",
     ]
-    assert expected_configs in config.db
+    assert sorted(expected_configs) == sorted(list(config.db.keys()))
 
 
 def test_no_config_file(new_config):
