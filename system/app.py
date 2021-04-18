@@ -1,3 +1,4 @@
+import argparse
 import atexit
 from getpass import getpass
 import hashlib
@@ -6,23 +7,44 @@ import os
 
 from . db import Db
 from . db import Sql
+from . exceptions import AuthenticationError
 from . config import Config
+from . config import Env
 from . models import Permissions
 from . models import User
 
 
+def get_cli_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-e",
+        "--environment",
+        required=True,
+        help="The environment that this application is running in",
+        choices=[
+            f"{Env.PROD}",
+            f"{Env.TEST}",
+        ]
+    )
+    return parser.parse_args()
+
+
 def startup() -> None:
+    args = get_cli_args()
     logging.basicConfig(
         filename="sis.log",
         encoding="utf-8",
         level=logging.INFO
     )
+
     logging.info("System starting up...")
     logging.info("Loading system configuration...")
-    Config.load()
+    Config.load(args.environment)
+
     logging.info("Sytem configuration loaded successfully")
     logging.info("Connecting to data source...")
     Db.connect()
+
     logging.info("Data source connection established successfully")
 
 
@@ -32,8 +54,8 @@ def shutdown() -> None:
 
 
 def login() -> User:
-    not_authenicated = True
     current_user: User
+    not_authenicated: True
 
     while not_authenicated:
         entered_username = input("Username: ")
@@ -52,7 +74,7 @@ def login() -> User:
             not_authenicated = False
             break
 
-        Exception AuthenticationError:
+        except AuthenticationError:
             print("Username/password is invalid")
 
     return current_user
