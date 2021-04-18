@@ -8,7 +8,7 @@ from app.config import Env
 
 
 @pytest.fixture
-def config(monkeypatch):
+def config():
     mock_config_filename = f"{Path.cwd()}/mock_cfg.ini"
     Path(mock_config_filename).unlink(True)
     Path(mock_config_filename).touch()
@@ -40,11 +40,12 @@ def new_config(monkeypatch):
     mock_config_filename = f"{Path.cwd()}/mock_cfg.ini"
     Path(mock_config_filename).unlink(True)
 
-    __builtins__["input"] = lambda x: "test_database"
-    __builtins__["input"] = lambda x: "test_user"
-    __builtins__["input"] = lambda x: "test_password"
-    __builtins__["input"] = lambda x: "test_host"
-    __builtins__["input"] = lambda x: "test_port"
+    monkeypatch.setattr("builtins.input", lambda *args: "test_database")
+    monkeypatch.setattr("builtins.input", lambda *args: "test_database")
+    monkeypatch.setattr("builtins.input", lambda *args: "test_user")
+    monkeypatch.setattr("builtins.input", lambda *args: "test_password")
+    monkeypatch.setattr("builtins.input", lambda *args: "test_host")
+    monkeypatch.setattr("builtins.input", lambda *args: "test_port")
 
     Config.load(Env.TEST, mock_config_filename)
     yield Config
