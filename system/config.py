@@ -18,7 +18,7 @@ class Config():
         cls.environment = environment
 
         config = ConfigParser()
-        config.read(f"../config_{environment}.ini")
-        cls.db = config["db"]
+        config.read("../config.ini")
+        cls.db = config[f"db_{environment}"]
 
 
