@@ -47,7 +47,7 @@ def login() -> User:
         try:
             current_user = Sql.authenticate_user(
                 entered_username,
-                hashed_pass
+                hashed_pass.hex()
             )
             not_authenicated = False
             break
