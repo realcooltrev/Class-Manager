@@ -16,7 +16,7 @@ class Config():
     _file_name: str
 
     @classmethod
-    def load(cls, environment: Env, filename: str="../config.ini") -> None:
+    def load(cls, environment: Env, filename: str=f"{Path.cwd()}/../config.ini") -> None:
         """Load the application configuration settings."""
         cls.environment = environment
         cls._file_name = filename
@@ -48,6 +48,7 @@ class Config():
     @classmethod
     def db_setup(cls, config: configparser.ConfigParser(), environment: Env) -> None:
         """Walk the user through setting up their environment-specific database settings."""
+        # TODO: This does not work, since these keys need to be created before populating
         config["db_{environment}"]["name"] = input("Database name: ")
         config["db_{environment}"]["user"] = input("Database user: ")
         config["db_{environment}"]["password"] = input("Database password: ")
