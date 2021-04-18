@@ -1,6 +1,8 @@
 import atexit
 from getpass import getpass
+import hashlib
 import logging
+import os
 
 from . db import Db
 from . db import Sql
@@ -36,11 +38,16 @@ def login() -> User:
     while not_authenicated:
         entered_username = input("Username: ")
         entered_password = getpass("Password: ")
-
+        hashed_pass = hashlib.pbkdf2_hmac(
+            hash_name="sha256",
+            password=entered_password.encode(),
+            salt=os.urandom(),
+            iterations=100_000
+        )
         try:
             current_user = Sql.authenticate_user(
                 entered_username,
-                entered_password
+                hashed_pass
             )
             not_authenicated = False
             break
