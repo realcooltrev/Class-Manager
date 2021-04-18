@@ -10,6 +10,7 @@ class Db():
 
     @classmethod
     def connect(cls) -> None:
+        """Create a static connection to the SIS database."""
         cls.connection = psycopg2.connect(
             db_name=Config.db["name"],
             user=Config.db["user"],
@@ -22,6 +23,7 @@ class Db():
 class Sql():
     @staticmethod
     def authenticate_user(username: str, password: str) -> User:
+        """Check for a user matching the given username and password."""
         query = (
             "select permissions"
             "   from users"
