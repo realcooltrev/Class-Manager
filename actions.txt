@@ -1,0 +1,14 @@
+actions:
+    prompt for username
+    check username
+    prompt for password
+    check password
+    check if student or teacher
+    display main menu
+        -> Grade courses (if teacher) -> Show list of courses and their info -> show menu -> change grade -> prompt for new grade -> show updated course info list
+                                                                                          -> go back
+        -> Check grades  (if student) -> Show list of courses and their info (including grades) -> show prompt to go back
+        -> Read instant messages -> Show messages sorted by age descending
+        -> Send instant message  -> Prompt for user input of message -> prompt for recipient username after user presses enter -> display "message sent successfully" -> go back
+        -> exit -> exit app
+    -> Log user login actions as audit trail
