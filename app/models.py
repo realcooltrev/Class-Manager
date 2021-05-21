@@ -1,10 +1,13 @@
 from enum import Enum
+from typing import Optional
+
+from pydantic import BaseModel
 
 
-class Assignment:
-    def __init__(self, name: str, score: int) -> None:
-        self.name = name
-        self.score = score
+class Course(BaseModel):
+    id: int
+    subject: str
+    number: int
 
 
 class Permissions(Enum):
@@ -13,12 +16,8 @@ class Permissions(Enum):
     STUDENT = "S"
 
 
-class User:
-    def __init__(self, username: str, permissions: Permissions) -> None:
-        self.username = username
-        self.permissions = permissions
-
-    def check_grades(self) -> list[Assignment]:
-        if self.permissions == Permissions.STUDENT:
-            pass
-        pass
+class User(BaseModel):
+    id: int
+    name: str
+    username: str
+    password: str
